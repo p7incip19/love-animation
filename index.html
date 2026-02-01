@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>给老婆的爱心动画</title>
+    <title>给老婆的惊喜</title>
     <style>
         body {
             margin: 0;
@@ -72,10 +72,86 @@
             50% { opacity: 1; }
             100% { opacity: 0.7; }
         }
+        
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 80%;
+            width: 400px;
+        }
+        
+        .modal-buttons {
+            margin-top: 20px;
+        }
+        
+        .modal-button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .forgive-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .exit-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .forgive-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .exit-btn:hover {
+            background-color: #d32f2f;
+            transform: scale(1.05);
+        }
+        
+        .modal-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 初始弹窗 -->
+    <div class="modal" id="initialModal">
+        <div class="modal-content">
+            <div class="modal-text">老婆，我又犯错了，点哪个按钮才能原谅我呢？</div>
+            <div class="modal-buttons">
+                <button class="modal-button forgive-btn" onclick="showMainAnimation()">那好吧原谅你了</button>
+                <button class="modal-button exit-btn" onclick="createMorePopups()">886</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容（初始隐藏） -->
+    <div class="container" id="mainContainer" style="display:none;">
         <div class="heart">❤️</div>
         <div class="message">老婆，你是最棒的！</div>
         <div class="floating-hearts" id="hearts"></div>
@@ -102,33 +178,52 @@
             }
         }
         
+        // 显示主动画
+        function showMainAnimation() {
+            document.getElementById('initialModal').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'flex';
+            createHearts();
+        }
+        
+        // 创建更多弹窗（病毒效果）
+        let popupCount = 0;
+        const maxPopups = 10;
+        
+        function createMorePopups() {
+            if (popupCount >= maxPopups) {
+                // 达到最大弹窗数后显示主动画
+                showMainAnimation();
+                return;
+            }
+            
+            popupCount++;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'popup_' + Date.now();
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-text">第 ${popupCount} 次拒绝，确定不再给我机会了吗？</div>
+                    <div class="modal-buttons">
+                        <button class="modal-button forgive-btn" onclick="showMainAnimation()">心软一下</button>
+                        <button class="modal-button exit-btn" onclick="this.closest('.modal').remove(); createMorePopups();">继续拒绝</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加随机位置
+            const content = modal.querySelector('.modal-content');
+            content.style.position = 'absolute';
+            content.style.top = Math.random() * 50 + 'vh';
+            content.style.left = Math.random() * 50 + 'vw';
+        }
+        
         // 页面加载时创建爱心
         window.onload = function() {
-            createHearts();
+            // 不自动创建爱心，等待用户选择原谅
         };
-        
-        // 每隔几秒再创建一些爱心
-        setInterval(() => {
-            if (document.querySelectorAll('.floating-heart').length < 30) {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                heart.innerHTML = '❤️';
-                
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDelay = '0s';
-                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                
-                document.querySelector('.floating-hearts').appendChild(heart);
-                
-                // 移除多余的爱心，避免太多
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.remove();
-                    }
-                }, 6000);
-            }
-        }, 500);
     </script>
 </body>
 </html>
