@@ -180,7 +180,11 @@
         
         // 显示主动画
         function showMainAnimation() {
-            document.getElementById('initialModal').style.display = 'none';
+            const initialModal = document.getElementById('initialModal');
+            if(initialModal) {
+                initialModal.style.display = 'none';
+                initialModal.remove(); // 完全移除元素
+            }
             document.getElementById('mainContainer').style.display = 'flex';
             createHearts();
         }
